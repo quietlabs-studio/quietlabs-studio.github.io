@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Snapt — QuietLabs Studio</title>
+  <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f11;
+      color: #e8e8ec;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo { font-size: 13px; color: #444; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 24px; }
+    .message { font-size: 16px; color: #666; }
+    .retry {
+      margin-top: 24px;
+      background: #a78bfa;
+      color: #0f0f11;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: none;
+    }
+    .retry:hover { background: #c4b5fd; }
+  </style>
+</head>
+<body>
+  <div class="logo">QuietLabs Studio</div>
+  <p class="message" id="msg">Opening checkout…</p>
+  <button class="retry" id="retryBtn" onclick="openCheckout()">Try again</button>
+
+  <script>
+    Paddle.Initialize({
+      token: 'live_dd60906b39c2a1675521c164427'
+    });
+
+    function openCheckout() {
+      document.getElementById('msg').textContent = 'Opening checkout…';
+      document.getElementById('retryBtn').style.display = 'none';
+
+      Paddle.Checkout.open({
+        items: [{ priceId: 'pri_01kqjydhk6w86t3kcenw2dksgb', quantity: 1 }],
+        settings: {
+          displayMode: 'overlay',
+          theme: 'dark',
+          locale: 'en'
+        },
+        eventCallback: function(event) {
+          if (event.name === 'checkout.closed') {
+            document.getElementById('msg').textContent = 'Checkout closed. Click below to try again.';
+            document.getElementById('retryBtn').style.display = 'inline-block';
+          }
+          if (event.name === 'checkout.completed') {
+            document.getElementById('msg').textContent = 'Purchase complete — thank you! You can close this tab.';
+            document.getElementById('retryBtn').style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // Auto-open on page load
+    window.addEventListener('load', function() {
+      setTimeout(openCheckout, 500);
+    });
+  </script>
+</body>
+</html>
