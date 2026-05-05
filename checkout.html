@@ -61,8 +61,11 @@
             document.getElementById('retryBtn').style.display = 'inline-block';
           }
           if (event.name === 'checkout.completed') {
-            document.getElementById('msg').textContent = 'Purchase complete — thank you! You can close this tab.';
-            document.getElementById('retryBtn').style.display = 'none';
+            const txn = event.data && event.data.transaction_id;
+            const dest = txn
+              ? 'success.html?txn=' + encodeURIComponent(txn)
+              : 'success.html';
+            window.location.href = dest;
           }
         }
       });
